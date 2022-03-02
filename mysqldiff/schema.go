@@ -64,12 +64,13 @@ func GetTables(localConfig, targetConfig Config) ([]TableInfo, error) {
 	local.Addr = fmt.Sprintf("%s:%s", localConfig.DBHost, localConfig.DBPort)
 	localDb, err := sql.Open("mysql", local.FormatDSN())
 	if err != nil {
-		panic(err)
+		return nil, fmt.Errorf("connect error: %s@%s:%s", localConfig.DBUser, localConfig.DBHost, localConfig.DBPort)
 	}
 	defer localDb.Close()
 
 	target := mysql.NewConfig()
 	var tables []TableInfo
+	var targetDb *sql.DB
 	if targetConfig.DBName != "" {
 		if targetConfig.DBHost != "" {
 			target.User = targetConfig.DBUser
@@ -85,9 +86,9 @@ func GetTables(localConfig, targetConfig Config) ([]TableInfo, error) {
 			target.Addr = fmt.Sprintf("%s:%s", localConfig.DBHost, localConfig.DBPort)
 		}
 
-		targetDb, err := sql.Open("mysql", target.FormatDSN())
+		targetDb, err = sql.Open("mysql", target.FormatDSN())
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("connect error: %s", target.FormatDSN())
 		}
 		defer targetDb.Close()
 
@@ -99,9 +100,9 @@ func GetTables(localConfig, targetConfig Config) ([]TableInfo, error) {
 		target.Net = "tcp"
 		target.Addr = fmt.Sprintf("%s:%s", localConfig.DBHost, localConfig.DBPort)
 
-		targetDb, err := sql.Open("mysql", target.FormatDSN())
+		targetDb, err = sql.Open("mysql", target.FormatDSN())
 		if err != nil {
-			panic(err)
+			return nil, fmt.Errorf("connect error: %s", target.FormatDSN())
 		}
 		defer targetDb.Close()
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/ayumu83s/go-mysqldiff/mysqldiff"
 )
 
@@ -19,12 +20,14 @@ func main() {
 
 	src, err := mysqldiff.GetTables(localConfig, srcConfig)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 
 	dst, err := mysqldiff.GetTables(localConfig, dstConfig)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 	mysqldiff.Diff(src, dst)
 }
